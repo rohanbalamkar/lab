@@ -1,58 +1,25 @@
 import cv2
-
 import numpy as np
 
-# Read the image
+# Load the image
+image_path = "image/atc.jpg"  # Replace with the path to your image
+img = cv2.imread(image_path)
 
-image_path = "gandhi.jpg" # Replace "your_image.jpg" with the path to your image
+# Convert the image to grayscale
+gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-image = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)
+# Edge detection
+edges = cv2.Canny(gray, 100, 200)  # Use Canny edge detector
 
-if image is None:
+# Texture extraction
+kernel = np.ones((5, 5), np.float32) / 25  # Define a 5x5 averaging kernel
+texture = cv2.filter2D(gray, -1, kernel)  # Apply the averaging filter for texture extraction
 
- print("Failed to load the image.")
+# Display the original image, edges, and texture
+cv2.imshow("Original Image", img)
+cv2.imshow("Edges", edges)
+cv2.imshow("Texture", texture)
 
-else:
-
- # Display the original image
-
- cv2.imshow("Original Image", image)
-
- # Apply Sobel filter to extract edges
-
- sobel_x = cv2.Sobel(image, cv2.CV_64F, 1, 0, ksize=3)
-
- sobel_y = cv2.Sobel(image, cv2.CV_64F, 0, 1, ksize=3)
-
- sobel_edges = cv2.magnitude(sobel_x, sobel_y)
-
- sobel_edges = cv2.normalize(sobel_edges, None, 0, 255, cv2.NORM_MINMAX, 
-
-dtype=cv2.CV_8U)
-
- # Display edges extracted using Sobel filter
-
- cv2.imshow("Edges (Sobel Filter)", sobel_edges)
-
- # Apply Laplacian filter to extract edges
-
- laplacian_edges = cv2.Laplacian(image, cv2.CV_64F)
-
- laplacian_edges = cv2.normalize(laplacian_edges, None, 0, 255, cv2.NORM_MINMAX, 
-
-dtype=cv2.CV_8U)
-
- # Display edges extracted using Laplacian filter
-
- cv2.imshow("Edges (Laplacian Filter)", laplacian_edges)
-
- # Apply Gaussian blur to extract textures
-
- gaussian_blur = cv2.GaussianBlur(image, (5, 5), 0)
-
- # Display image with Gaussian blur
- cv2.imshow("Gaussian Blur", gaussian_blur)
-
- cv2.waitKey(0)
-
- cv2.destroyAllWindows()
+# Wait for a key press and then close all windows
+cv2.waitKey(0)
+cv2.destroyAllWindows()
