@@ -1,57 +1,29 @@
 import cv2
-
 import numpy as np
 
-# Read the image
+# Load the image
+image_path = "image/atc.jpg"  # Replace with the path to your image
+img = cv2.imread(image_path)
 
-image_path = "Che.jpg" # Replace "your_image.jpg" with the path to your image
+# Get the image dimensions
+height, width, _ = img.shape
 
-image = cv2.imread(image_path)
+# Define the transformation matrices
+rotation_matrix = cv2.getRotationMatrix2D((width/2, height/2), 45, 1)  # Rotate by 45 degrees
+scaling_matrix = np.float32([[1.5, 0, 0], [0, 1.5, 0]])  # Scale by 1.5x
+translation_matrix = np.float32([[1, 0, 100], [0, 1, 50]])  # Translate by (100, 50)
 
-if image is None:
+# Apply transformations
+rotated_img = cv2.warpAffine(img, rotation_matrix, (width, height))
+scaled_img = cv2.warpAffine(img, scaling_matrix, (int(width*1.5), int(height*1.5)))
+translated_img = cv2.warpAffine(img, translation_matrix, (width, height))
 
- print("Failed to load the image.")
+# Display the original and transformed images
+cv2.imshow("Original Image", img)
+cv2.imshow("Rotated Image", rotated_img)
+cv2.imshow("Scaled Image", scaled_img)
+cv2.imshow("Translated Image", translated_img)
 
-else:
-
- # Display the original image
-
- cv2.imshow("Original Image", image)
-
- # Rotation
-
- angle = 45 # Rotation angle in degrees
-
- center = (image.shape[1] // 2, image.shape[0] // 2) # Center of rotation
-
- rotation_matrix = cv2.getRotationMatrix2D(center, angle, 1.0) # Rotation matrix
-
- rotated_image = cv2.warpAffine(image, rotation_matrix, (image.shape[1], image.shape[0]))
-
- # Scaling
-
- scale_factor = 0.5 # Scaling factor (0.5 means half the size)
-
- scaled_image = cv2.resize(image, None, fx=scale_factor, fy=scale_factor)
-
- # Translation
-
- translation_matrix = np.float32([[1, 0, 100], [0, 1, -50]]) # Translation matrix (100 pixels 
-
-right, 50 pixels up)
-
- translated_image = cv2.warpAffine(image, translation_matrix, (image.shape[1], 
-
-image.shape[0]))
-
- # Display the transformed images
-
- cv2.imshow("Rotated Image", rotated_image)
-
- cv2.imshow("Scaled Image", scaled_image)
-
- cv2.imshow("Translated Image", translated_image)
-
- cv2.waitKey(0)
-
- cv2.destroyAllWindows()
+# Wait for a key press and then close all windows
+cv2.waitKey(0)
+cv2.destroyAllWindows()
